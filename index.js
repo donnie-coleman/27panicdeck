@@ -4,6 +4,7 @@ const screen = document.querySelector('.pre');
 const HARD = [3,4,4,5];
 const NORM = [2,3,3,4];
 const EASY = [1,2,2,3];
+let DIFFICULTY = NORM;
 // # of wild cards
 const WILDS = 4;
 const MOVES_TO_FORCE_RESHUFFLE = 3;
@@ -21,7 +22,7 @@ const ALPHA = 'abcdefghijklmnop';
 
 // global_state
 let state = {
-              difficulty: NORM,
+              difficulty: DIFFICULTY,
               cards: {
                 build: {},
                 wild: [],
@@ -379,7 +380,7 @@ const invalid = show => {
     beep.play();
     document.querySelector('.prompt').classList.add('invalid');
   }
-  invalid_key.style.display = show === false ? 'none' : 'inline';
+  invalid_key.style.display = show === false ? 'none' : 'block';
 };
 const interval = 200;
 let timeout = 0;

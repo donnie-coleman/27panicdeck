@@ -116,10 +116,8 @@ body::after {
 .invalid-key {
   color: red;
   font-weight: bold;
-  position: absolute;
-  top: 30px;
-  right: 20px;
-  text-decoration: blink;
+  display: block;
+  margin-top: 15px;
 }
 
 .empty_year {
