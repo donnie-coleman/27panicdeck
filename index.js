@@ -153,7 +153,7 @@ const roleMenuCallback = event => {
       else if (state.roles.filter(role => !role).length > 2) {
           state.roles = [];
           clear("<span class='red'>THIS MISSION REQUIRES AT LEAST TWO SCIENTISTS. TRY AGAIN!</span>");
-          roleStart();
+          roleStart(); // start over with the rules
       }
       else {
         input.contentEditable = false;
@@ -181,7 +181,7 @@ const areYouSureCallback = event => {
 
     state.roles = [];
     clear();
-    roleStart();
+    roleStart(); // start over with the roles
   }
   else {
     invalid();
