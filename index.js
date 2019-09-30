@@ -110,16 +110,17 @@ const continueMenuCallback = event => {
   }
 }
 const mainMenuCallback = event => {
-  if(event.key === 'n') { // game End
-    stopCursor();
+  if (event.key === 'n') { // game End
+    invalid(false);
     document.removeEventListener("keypress", mainMenuCallback);
     println('Understood. Saving the World is not for the weak or faint of heart.');
+    document.querySelector('.prompt').innerHTML = "RELOAD TO RECONSIDER"; // blinking prompt
+    prompt(' ');
   }
-  else if(event.key === 'Y') { // game Start
+  else if (event.key === 'Y') { // game Start
     document.removeEventListener("keypress", mainMenuCallback);
     clear();
     roleStart();
-    //processing(gameStart);
   }
   else { // main menu
     invalid();
@@ -144,7 +145,7 @@ const roleMenuCallback = event => {
       const curr = state.roles.length;
       state.roles[curr] = input.innerHTML.trim().replace(/\n/g, ' ');
       input.removeEventListener("keypress", roleMenuCallback);
-      println(`<span class='${YEARS[curr].color.toLowerCase()}'>${YEARS[curr].role}</span>: ${state.roles[curr] || '[none]'}`);
+      println(`<span class='scientist ${YEARS[curr].color.toLowerCase()}'>${YEARS[curr].role}</span>: ${state.roles[curr] || '[none]'}`);
 
       if (state.roles.length < 4) {
         roleStart(); // get next role
