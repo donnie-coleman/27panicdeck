@@ -90,8 +90,6 @@ const initializeState = () => {
   state.roles = [];
 
   state.curr_role = 0;
-
-  saveState();
 };
 
 const continueMenuCallback = event => {
