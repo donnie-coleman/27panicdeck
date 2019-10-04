@@ -36,7 +36,17 @@ body::after {
 .pre::-webkit-scrollbar {
   display: none;
 }
-
+.pre i {
+  color: grey;
+}
+.pre > span:last-child i {
+  margin-top: 13px;
+  display: block;
+  font-style: normal;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+}
 .move-cell {
   font-weight: bold;
   display: inline-block;
