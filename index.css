@@ -45,7 +45,6 @@ body::after {
   font-style: normal;
   font-weight: bold;
   color: white;
-  text-transform: uppercase;
 }
 .move-cell {
   font-weight: bold;

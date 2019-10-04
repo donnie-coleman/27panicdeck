@@ -26,7 +26,8 @@ let state = {
               cards: {
                 build: {},
                 wild: [],
-                move: []
+                move: [],
+                initial: []
               },
               deck: [],
               drawn: [],
@@ -44,7 +45,6 @@ const launch = () => {
     document.addEventListener("keypress", continueMenuCallback);
   }
   else {
-    initializeState();
     clear(`Hello, I am the 27P Desktop Estimated Chaos Knowledge-Base (D.E.C.K.)`);
     prompt(`Would you like to Save the World today? (Y/n)`);
     document.addEventListener("keypress", mainMenuCallback);
@@ -67,6 +67,29 @@ const initializeState = () => {
     }
   }
 
+  // add wild cards
+  for(let w = 0; w < 4; w++) {
+    state.cards.wild.push(true);
+    //add wild cards to deck
+    state.deck.push(makeWildCard());
+  }
+
+  // shuffle initial deck
+  shuffleDeck();
+  console.log("state.deck tracks+wilds:",state.deck.length);
+console.log(state.roles)
+  // remove x cards
+  let filled_roles = 12 - state.roles.filter((role)=>!!role).length;
+  // 4 => 8
+  // 3 => 9
+  // 2 => 10 == 12 - x
+  console.log('initial cards:'+filled_roles);
+  for(let i = 0; i < filled_roles; i++) {
+    state.cards.initial.push(state.deck.shift());
+  }
+  console.log("initial tracks:",state.cards.initial);
+  console.log("state.deck tracks+wilds-initial:",state.deck.length);
+
   // add move cards
   for (let year = 0; year < state.difficulty.length; year++) {
     state.cards.move[year] || (state.cards.move[year] = []);
@@ -76,18 +99,10 @@ const initializeState = () => {
       state.deck.push(makeMoveCard(year));
     }
   }
+  console.log("state.deck tracks+wilds-initial+moves:",state.deck.length);
 
-  // add wild cards
-  for(let w = 0; w < 4; w++) {
-    state.cards.wild.push(true);
-    //add wild cards to deck
-    state.deck.push(makeWildCard());
-  }
-
-  // shuffle deck
+  // shuffle deck again
   shuffleDeck();
-
-  state.roles = [];
 
   state.curr_role = 0;
 };
@@ -215,13 +230,33 @@ const roleStart = () => {
   let role_prompt = `Enter the name of the <span class='${YEARS[state.roles.length].color}'>${YEARS[state.roles.length].role}</span> (Enter for none): `;
   prompt(null, role_prompt);
 };
-const gameContinue = () => {
-  gameStart();
-};
 const gameStart = () => {
+  initializeState();
+
+  let cards_per_role = (state.cards.initial.length / state.roles.filter((role) => !!role).length);
+  let initialMoves = '';
+  let current_init_card = 0;
+  state.roles.forEach((role, index) => {
+    if (!!role) {
+      initialMoves += `<span class='scientist ${YEARS[index].color.toLowerCase()}'>${YEARS[index].role}</span>`;
+      initialMoves += ` (${role}) starts with`;
+      let cards = [];
+      for(let i = 0; i < cards_per_role; i++) {
+        cards.push(` ${cardName(state.cards.initial[current_init_card])}`);
+        current_init_card++;
+      }
+      initialMoves += cards.join();
+      initialMoves += '<br>';
+    }
+    else return;
+  });
+
+  gameContinue(initialMoves);
+};
+const gameContinue = (initialMoves) => {
   renderMoves();
   document.addEventListener("keyup", drawCallback);
-  clear();
+  clear(initialMoves || null);
   if(state.drawn_moves.length < MOVES_TO_FORCE_RESHUFFLE) { // check for drawn moves
     cardPrompt();
   }
@@ -234,25 +269,7 @@ const draw = () => {
   // check for drawn moves
   if(state.drawn_moves.length < MOVES_TO_FORCE_RESHUFFLE) {
     let card = state.deck.shift();
-    let text = '';
-
-    switch(card.type) {
-        case 'WILD':
-          text = '[Wild]';
-        break;
-
-        case 'MOVE':
-          text = `<span class='move_card ${YEARS[card.year].color}'>[Move ${YEARS[card.year].year}]</span>`;
-          // check for need to reshuffle
-        break;
-
-        case 'TRACK':
-          text = `[Track ${card.track.toUpperCase()}]`;
-        break;
-
-        default:
-          text = "ERROR";
-    }
+    let text = cardName(card);
 
     println(`<i>${currentPlayerName()} received a ${text} C.A.R.D.</i>`);
     invalid(false);
@@ -294,6 +311,28 @@ const cardPrompt = () => {
   prompt(null, `${currentPlayerName()}: Press C to receive a C.A.R.D.: `);
   updateRemaining();
 };
+const cardName = (card) => {
+  let text;
+
+  switch(card.type) {
+    case 'WILD':
+      text = '[Wild]';
+    break;
+
+    case 'MOVE':
+      text = `<span class='move_card ${YEARS[card.year].color}'>[Move ${YEARS[card.year].year}]</span>`;
+      // check for need to reshuffle
+    break;
+
+    case 'TRACK':
+      text = `[Track ${card.track.toUpperCase()}]`;
+    break;
+
+    default:
+      text = "ERROR";
+  }
+  return text;
+}
 const currentPlayerName = () => {
     let currRoleNumber = state.curr_role % 4;
     let currPlayer = state.roles[currRoleNumber];
